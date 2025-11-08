@@ -49,3 +49,13 @@ def detect_faces_in_video(video_path=0, cascade_path=os.path.join(models_dir, 'h
 
     cap.release()
     cv2.destroyAllWindows()
+
+def detect_faces_in_frame(frame, cascade_path=os.path.join(models_dir, 'haarcascade_frontalface_default.xml')):
+    face_cascade = cv2.CascadeClassifier(cascade_path)
+    if face_cascade.empty():
+        print("Warning: Face cascade not loaded.")
+        return []
+
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    return faces  # List of (x, y, w, h)

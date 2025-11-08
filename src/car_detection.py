@@ -35,3 +35,27 @@ def detect_cars_in_video(video_path=0):
 
     cap.release()
     cv2.destroyAllWindows()
+
+
+def detect_cars_in_frame(frame):
+    model = YOLO('yolov5s.pt')  # Ensure model is loaded
+
+    results = model(frame)
+    detections = []
+
+    for result in results:
+        boxes = result.boxes
+        for box in boxes:
+            x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
+            conf = box.conf[0].cpu().numpy()
+            cls = int(box.cls[0].cpu().numpy())
+            label = model.names[cls]
+
+            if label in ['car', 'truck', 'bus'] and conf > 0.5:
+                detections.append({
+                    'type': label,
+                    'bbox': [x1, y1, x2, y2],
+                    'confidence': float(conf)
+                })
+
+    return detections

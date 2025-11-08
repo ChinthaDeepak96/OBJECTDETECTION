@@ -26,3 +26,15 @@ def detect_pedestrians_in_video(video_path=0, cascade_path=os.path.join(models_d
 
     cap.release()
     cv2.destroyAllWindows()
+
+
+def detect_pedestrians_in_frame(frame, cascade_path=os.path.join(models_dir, 'haarcascade_fullbody.xml')):
+    pedestrian_cascade = cv2.CascadeClassifier(cascade_path)
+    if pedestrian_cascade.empty():
+        print("Warning: Pedestrian cascade not loaded.")
+        return []
+
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    pedestrians = pedestrian_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    detections = [{'type': 'pedestrian', 'bbox': [x, y, w, h], 'confidence': 0.8} for (x, y, w, h) in pedestrians]
+    return detections
